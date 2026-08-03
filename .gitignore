@@ -1,0 +1,68 @@
+# Virtual environments
+# This file previously contained the literal command `echo "venv/" > .gitignore`
+# instead of its intended output, so LPBF_env/ (1.1 GB) was not ignored.
+LPBF_env/
+venv/
+.venv/
+env/
+
+# Operating-system and editor files
+.DS_Store
+*.textClipping
+.vscode/
+.idea/
+__pycache__/
+*.py[cod]
+
+# Build artifacts
+# Rebuild 3DThesis on the target machine; macOS arm64 binaries do not run on Linux.
+build/
+3DThesis/build/
+*.o
+*.so
+*.dylib
+
+# Reproducible simulation outputs
+# A single A case is about 360 MB and a B case about 200 MB; do not commit them.
+Data/
+*.Snapshot.*.csv
+*.Solidification.*.csv
+*.RDF.*.csv
+coverage_target_points.txt
+
+# Run directories
+source/Test/316L/sweep_hatch/
+source/Test/316L/runs/
+source/Test/316L/C_calib_200W_316L/calib_runs/
+
+# Assessment results: retain documentation and summaries, exclude large intermediates.
+source/LPBF_Agent/results/*/
+!source/LPBF_Agent/results/README.md
+
+# Slice files (about 200 MB and reproducible from the STL)
+# Keep 3dbenchy.stl as the source model. Regenerate production CLI files from the
+# documented Netfabb settings, while retaining small CLI test fixtures.
+*.cli
+!source/LPBF_Agent/tests/fixtures/*.cli
+
+# Backup and temporary files
+*.bak
+*.orig
+*.zip
+*.tmp
+* copy.*
+
+# Legacy orphan directory
+# The root B_200W_316L/ is an obsolete copy. Code uses
+# source/Test/316L/B_200W_316L/. The old directory contains a full-part Path.txt
+# and pre-fix simulation output, so it must not enter version control.
+/B_200W_316L/
+
+# Copyrighted papers
+# Keep citation metadata in the documentation instead of committing PDFs.
+Papers/
+
+# Superseded by docs/ (kept empty; the sandbox cannot unlink them)
+/PIPELINE.md
+/RUNBOOK.md
+/SERVER.md

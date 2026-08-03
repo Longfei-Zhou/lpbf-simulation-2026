@@ -1,0 +1,23 @@
+# Xact Metal XM200G, 316L, 100 um spot.
+# Source: official Xact Metal 316L material data sheet (Praxair/Linde, 2021-05).
+#   Additive Manufacturing System = XM200G
+#   Laser Diameter = 100 microns
+#   Laser Power    = 200 W
+#   Layer Thickness= 30 microns
+#
+# 3DThesis convention: input width = sqrt(6)*sigma = 0.6124*D4sigma.
+#   D4sigma = 100 um -> sigma = 25 um -> Width = 6.124e-5
+#
+# Depth_Z and Efficiency require calibration against single-track metallography.
+Shape
+{
+    Width_X 6.124e-5
+    Width_Y 6.124e-5
+    Depth_Z 3.5e-5
+}
+
+Intensity
+{
+    Power 200
+    Efficiency 0.35
+}

@@ -1,0 +1,7 @@
+Solidification
+{
+    Tracking None
+    Timestep 1.0e-5
+    OutputFrequency 2000
+    Secondary 0
+}

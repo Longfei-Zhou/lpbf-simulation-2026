@@ -1,0 +1,12 @@
+Grid
+{
+    x 1
+    y 1
+    z 1
+}
+
+Temperature
+{
+    T 1
+    T_hist 0
+}

@@ -1,0 +1,7 @@
+Solidification
+{
+    Tracking Surface
+    Timestep 2.5e-6
+    OutputFrequency 250
+    Secondary 0
+}

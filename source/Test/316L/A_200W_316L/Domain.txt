@@ -1,0 +1,22 @@
+X
+{
+    Min -0.00235
+    Max -0.00045
+    Res  1.0e-5
+}
+
+Y
+{
+    Min  0.00170
+    Max  0.00350
+    Res  1.0e-5
+}
+
+# An 80 um Z depth covers the approximately 45 um pool while limiting the
+# 20-snapshot output to about 390 MB (191 x 181 x 17 points per snapshot).
+Z
+{
+    Min -0.00008
+    Max  0.00000
+    Res  5.0e-6
+}

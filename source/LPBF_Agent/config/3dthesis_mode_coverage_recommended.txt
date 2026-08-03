@@ -1,0 +1,17 @@
+# Coverage-validation Solidification mode.
+#
+# Tracking None is essential when a regular Domain grid is used: Surface only
+# returns the molten-pool surface and omits untouched target points, so missing
+# rows cannot be distinguished from numMelt=0.
+#
+# For a cheaper run, use Domain/Custom/File containing only the intended
+# top-surface (z=0) and previous-layer-interface (z=-layer_thickness) points.
+# 3DThesis calculates all Custom points regardless of this Tracking setting.
+
+Solidification
+{
+    Tracking None
+    Timestep 1.0e-5
+    OutputFrequency 1000000
+    Secondary 0
+}

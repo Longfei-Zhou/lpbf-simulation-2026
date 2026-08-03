@@ -1,0 +1,13 @@
+# Compact coverage-validation domain.
+#
+# Copy the generated results/.../coverage_target_points.txt into the new
+# 3DThesis case directory, then set this path. The point file is whitespace
+# separated x y z in millimetres, matching 3DThesis FileRead_Points.
+#
+# Custom points override the regular X/Y/Z grid and are all calculated even if
+# Mode.txt says Tracking Surface or Volume.
+
+Custom
+{
+    File coverage_target_points.txt
+}

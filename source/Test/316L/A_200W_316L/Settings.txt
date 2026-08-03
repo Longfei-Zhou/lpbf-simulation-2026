@@ -1,0 +1,18 @@
+Temperature
+{
+    Sol_Tol 1.0e-3
+    Sol_Iter 10
+    Cutoff_Peak 1.0e-9
+    Cutoff_T0TL 1.0e-9
+}
+
+Path
+{
+    Buffer 0.003
+    Compression 0
+}
+
+Compute
+{
+    MaxThreads 8
+}

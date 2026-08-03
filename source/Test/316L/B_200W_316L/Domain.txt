@@ -1,0 +1,25 @@
+X
+{
+    Min -0.006197993
+    Max  0.003206523
+    Res  2.5e-5
+}
+
+Y
+{
+    Min -0.004596001
+    Max  0.004811997
+    Res  2.5e-5
+}
+
+Z
+{
+    Min -3.0e-5
+    Max  0.0
+    Res  1.5e-5
+}
+
+Custom
+{
+    File coverage_target_points.txt
+}

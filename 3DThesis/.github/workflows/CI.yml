@@ -1,0 +1,204 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${ {github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{github.event_name == 'pull_request'}}
+
+jobs:
+  CI:
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        distro: ['ubuntu:latest']
+        cxx: ['g++', 'clang++']
+        cmake_build_type: ['Debug', 'Release']
+    runs-on: ubuntu-latest
+    container: ghcr.io/ornl-mdf/ci-containers/ubuntu:latest
+    steps:
+      - name: Checkout 3DThesis
+        uses: actions/checkout@v3
+      - name: Build 3DThesis
+        run: |
+          cmake -B build \
+            -DCMAKE_INSTALL_PREFIX=$HOME/3dthesis \
+            -DMPIEXEC_PREFLAGS="--oversubscribe" \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
+            -DCMAKE_CXX_FLAGS="-Wall -pedantic ${cmake_cxx_flags[@]}" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }} \
+            ${cmake_opts[@]}
+          cmake --build build --parallel 2
+          cmake --install build
+      - name: Test 3DThesis Snapshots
+        run: |
+          cd $GITHUB_WORKSPACE/examples/snapshot
+          echo Current working directory: $(pwd)
+          $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "snapshot*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+          rm -r Data
+          mpirun -n 2 --oversubscribe $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "snapshot*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+      - name: Test 3DThesis Snapshots T_hist
+        run: |
+          cd $GITHUB_WORKSPACE/examples/snapshot_T_hist
+          echo Current working directory: $(pwd)
+          $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "snapshot_T_hist*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+          rm -r Data
+          mpirun -n 2 --oversubscribe $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "snapshot_T_hist*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+      - name: Test 3DThesis Solidification
+        run: |
+          cd $GITHUB_WORKSPACE/examples/solidification
+          echo Current working directory: $(pwd)
+          $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "solidification*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+          rm -r Data
+          mpirun -n 2 --oversubscribe $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "solidification*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+      - name: Test 3DThesis Solidification MultiBeam
+        run: |
+          cd $GITHUB_WORKSPACE/examples/solidification_multibeam
+          echo Current working directory: $(pwd)
+          $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "solidification_multibeam*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+          rm -r Data
+          mpirun -n 2 --oversubscribe $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "solidification_multibeam*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+      - name: Test 3DThesis Solidificiton with Meltpool Stats
+        run: |
+          cd $GITHUB_WORKSPACE/examples/solidification_mpstats
+          echo Current working directory: $(pwd)
+          $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "solidification_mpstats*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+          rm -r Data
+          mpirun -n 2 --oversubscribe $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "solidification_mpstats*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+      - name: Test 3DThesis Solidification with Stork output
+        run: |
+          cd $GITHUB_WORKSPACE/examples/solidification_stork
+          echo Current working directory: $(pwd)
+          $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "stork.RRDF*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+          rm -r Data
+          mpirun -n 2 --oversubscribe $HOME/3dthesis/bin/3DThesis ./ParamInput.txt
+          file_count="$(find Data -name "stork.RRDF*.csv" -printf "." | wc -m)"
+          if [ $(expr $file_count) < 1 ]; then
+              exit 1
+          fi
+
+  Windows:
+      # Update the job name based on the compiler being tested
+      name: Windows (${{ matrix.config.name }})
+      runs-on: windows-latest
+      
+      strategy:
+        matrix:
+          config:
+            - name: MinGW
+              compiler: mingw
+              # For MinGW, specify the generator and compiler paths.
+              cmake_generator: "Ninja"
+              cxx_compiler: "C:/mingw64/bin/g++.exe"
+              c_compiler: "C:/mingw64/bin/gcc.exe"
+
+            - name: MSVC
+              compiler: msvc
+              # For MSVC, specify the Visual Studio generator.
+              # The compiler is auto-detected by CMake.
+              cmake_generator: "Visual Studio 18 2026"
+              cxx_compiler: "" # Not needed
+              c_compiler: ""   # Not needed
+
+      steps:
+        - name: Checkout 3DThesis
+          uses: actions/checkout@v4
+
+        - name: Build
+          shell: cmd
+          # Set compiler paths for CMake in MinGW configuration.
+          env:
+            CXX: ${{ matrix.config.cxx_compiler }}
+            CC: ${{ matrix.config.c_compiler }}
+          # build using CMake with the generator from the matrix.
+          # For MSVC, we must specify a build configuration (e.g., Release).
+          # The '--config' flag is ignored by single-configuration generators like Ninja.
+          run: |
+            cmake -B build ^
+              -G "${{ matrix.config.cmake_generator }}" ^
+              -DCMAKE_INSTALL_PREFIX=3dthesis ^
+              -DMPIEXEC_PREFLAGS="--oversubscribe"
+
+            cmake --build build --config Release --parallel 2
+            cmake --install build --config Release
+
+        - name: Test 3DThesis Snapshots
+          shell: cmd
+          run: |
+            cd %GITHUB_WORKSPACE%\examples\snapshot
+            echo Current working directory: %CD%
+
+            rem The executable path is the same regardless of the compiler.
+            %GITHUB_WORKSPACE%\3dthesis\bin\3DThesis.exe .\ParamInput.txt
+
+            rem Check if the 'Data' directory exists.
+            if not exist Data (
+              echo Error: The 'Data' directory was not created.
+              exit /b 1
+            )
+
+            rem Count the number of snapshot files.
+            set file_count=0
+            for /f %%i in ('dir /b /a-d Data\snapshot*.csv ^| find /c /v ""') do set file_count=%%i
+            
+            echo Found %file_count% snapshot files.
+
+            rem Check if the file count is less than 1.
+            if %file_count% LSS 1 (
+              echo Error: No snapshot files were found.
+              exit /b 1
+            )
+
+            rem Clean up the created directory.
+            rmdir /s /q Data

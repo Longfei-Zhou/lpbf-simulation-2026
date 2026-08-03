@@ -1,0 +1,11 @@
+Constants
+{
+    T_0 298.15
+    T_L 1708
+    k 24
+    c 789
+    p 7904
+}
+
+# CET is disabled because no internally consistent 316L N0/n/a parameter set
+# is available. Restore it only with all three parameters from one source.

@@ -1,0 +1,75 @@
+# Physics-informed LPBF layer scoring configuration.
+# null means: read the value from the 3DThesis case files.
+process:
+  liquidus_k: null
+  layer_thickness_m: 3.0e-5
+  # Keep this explicit: mixed contour directions bias automatic inference.
+  hatch_spacing_m: 1.0e-4
+  grid_x_m: null
+  grid_y_m: null
+  grid_z_m: null
+
+# This status is deliberately separate from file completeness.  Change it only
+# after matching C-case single-track width/depth to same-condition experiments.
+model:
+  calibration_status: uncalibrated
+  calibration_basis: engineering prior (Efficiency=0.35, Depth_Z=35 um)
+  parameters_requiring_calibration:
+    - Beam.Intensity.Efficiency
+    - Beam.Shape.Depth_Z
+
+# Used only when the source case does not include the corresponding value.
+# Fallback use lowers the reported confidence.
+fallback:
+  liquidus_k: 1708.0
+  layer_thickness_m: 2.5e-5
+  hatch_spacing_m: 1.0e-4
+  grid_x_m: 5.0e-5
+  grid_y_m: 5.0e-5
+  grid_z_m: 2.5e-5
+
+scoring:
+  # Top coverage and interface fusion are scored separately so the same
+  # interface lack-of-fusion evidence is not counted twice.
+  weights:
+    coverage: 0.20
+    fusion: 0.30
+    fusion_margin: 0.10
+    keyhole_margin: 0.10
+    pool_consistency: 0.10
+    thermal_uniformity: 0.12
+    remelt: 0.08
+  keyhole_aspect_limit: 0.5
+  keyhole_severe_aspect_limit: 0.8
+  pool_cv_scale: 0.35
+  thermal_log_mad_scale: 0.35
+  peak_temperature_review_multiple_of_liquidus: 3.0
+
+decision:
+  pass_score: 75.0
+  minimum_pass_evidence: 85.0
+  minimum_pass_evidence_adequacy: 70.0
+
+coverage:
+  # 99% is the release target. Values below 95% are robust hard failures;
+  # 95–99% are REVIEW so one boundary row cannot create a brittle FAIL.
+  minimum_coverage_fraction: 0.99
+  hard_fail_fraction: 0.95
+  minimum_coordinate_completeness: 0.99
+  authoritative_num_melt_tracking_modes:
+    - None
+  # Snapshot accumulation remains a lower bound by default. Enabling this
+  # requires matching ScanFracs metadata and enough snapshots to span the path.
+  allow_dense_snapshots_as_authoritative: false
+
+evidence:
+  # Presence and adequacy are reported separately. Sparse snapshots can prove
+  # that a geometry exists without claiming it represents the whole path.
+  minimum_geometry_snapshots: 20
+  recommended_cells_across_pool_dimension: 5.0
+  minimum_snapshot_path_span_fraction: 0.80
+
+thermal_history:
+  # T_hist creates one file per point. If explicitly supplied, analyse an
+  # evenly spaced sample no larger than this value.
+  maximum_files: 5000

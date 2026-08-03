@@ -1,0 +1,15 @@
+# C_calib calibration targets; one row per measured melt-pool condition.
+#
+# Grades: A = measured/official; B = derived from exact data by a documented
+# rule; C = general engineering prior; D = placeholder requiring measurement.
+#
+# Blank width_um or depth_um values must be read from the cited paper figures.
+# Enter bare-plate values only because the simulation uses the solid surface as
+# z=0 and contains no powder layer. Run calibrate_beam.py after filling them.
+#
+label,power_w,speed_m_s,width_um,depth_um,source,figure,grade,note
+N01_BP,260,0.52,,,Micromachines 2024 15(2) 170,Fig.5,D,"Keyhole regime (width/depth 0.633); exclude from conduction-model fitting"
+N02_BP,260,0.87,,,Micromachines 2024 15(2) 170,Fig.5,D,"300 J/m; closest to the study condition of 250 J/m"
+N03_BP,260,1.30,,,Micromachines 2024 15(2) 170,Fig.5,D,"200 J/m; reported onset of swell-undercut"
+N04_BP,260,1.47,,,Micromachines 2024 15(2) 170,Fig.5,D,"177 J/m"
+N05_BP,260,2.20,,,Micromachines 2024 15(2) 170,Fig.5,D,"118 J/m; clean conduction regime"
